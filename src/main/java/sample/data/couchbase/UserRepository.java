@@ -16,10 +16,28 @@
 
 package sample.data.couchbase;
 
+import org.springframework.data.couchbase.core.query.N1qlPrimaryIndexed;
+import org.springframework.data.couchbase.core.query.Query;
 import org.springframework.data.couchbase.core.query.ViewIndexed;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
+import org.springframework.scheduling.annotation.Async;
+import rx.Observable;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @ViewIndexed(designDoc = "user", viewName = "all")
+@N1qlPrimaryIndexed
 public interface UserRepository extends CouchbaseRepository<User, String> {
+
+
+    @Async
+    @Query("#{#n1ql.selectEntity}")
+    CompletableFuture<List<User>> findAllUsers();
+
+
+    @Async
+    @Query("#{#n1ql.selectEntity}")
+    Observable<User> findAllUsersRx();
 
 }
